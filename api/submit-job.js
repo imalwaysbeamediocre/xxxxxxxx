@@ -20,9 +20,9 @@ async function sendToDiscord(embed) {
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
-    const { webhook, jobId, placeId, player, timestamp } = req.body;
+    const { webhook, JOB_ID, placeId, player, timestamp } = req.body;
     
-    console.log('🚀 Job submitted:', player, jobId);
+    console.log('🚀 Job submitted:', player, JOB_ID);
     
     // Send to Discord
     await sendToDiscord({
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
       description: `**${player}** submitted a new job`,
       color: 0x0099ff,
       fields: [
-        { name: "Job ID", value: `\`${jobId}\``, inline: true },
+        { name: "Job ID", value: `\`${JOB_ID}\``, inline: true },
         { name: "Place ID", value: placeId, inline: true },
         { name: "Submitted", value: `<t:${timestamp}:R>`, inline: true }
       ],
@@ -40,7 +40,7 @@ export default async function handler(req, res) {
     res.status(200).json({ 
       success: true, 
       message: 'Job submitted',
-      jobId: jobId
+      JOB_ID: JOB_ID
     });
   } else {
     res.status(405).json({ error: 'Method not allowed' });
