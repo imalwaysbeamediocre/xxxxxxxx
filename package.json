@@ -1,0 +1,11 @@
+{
+  "name": "roblox-tracker-api",
+  "version": "1.0.0",
+  "description": "API for Roblox ServerTracker",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  }
+}
