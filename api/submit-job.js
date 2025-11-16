@@ -1,33 +1,47 @@
-export default async function handler(req, res) {
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+import fetch from 'node-fetch';
+
+const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1439213000455360624/Dj7Uh7hGHMX7CN5wRNN6hijz8ppS-bXFSwTuTX68n00k9YBNZ9miRmbR_HQ3TBW3iOeQ";
+
+async function sendToDiscord(embed) {
+  try {
+    await fetch(DISCORD_WEBHOOK, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        embeds: [embed]
+      })
+    });
+  } catch (error) {
+    console.log('Discord webhook failed:', error);
   }
+}
 
+export default async function handler(req, res) {
   if (req.method === 'POST') {
-    try {
-      const { webhook, jobId, placeId, player, timestamp } = req.body;
-      
-      console.log('🚀 Job submitted:', {
-        player: player,
-        jobId: jobId,
-        placeId: placeId,
-        webhook: webhook ? 'Provided' : 'None'
-      });
-
-      res.status(200).json({ 
-        success: true, 
-        message: 'Job submitted successfully',
-        data: {
-          jobId: jobId,
-          placeId: placeId,
-          player: player,
-          processedAt: new Date().toISOString()
-        }
-      });
-    } catch (error) {
-      console.error('Error in submit-job:', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    const { webhook, jobId, placeId, player, timestamp } = req.body;
+    
+    console.log('🚀 Job submitted:', player, jobId);
+    
+    // Send to Discord
+    await sendToDiscord({
+      title: "🚀 Job Submitted",
+      description: `**${player}** submitted a new job`,
+      color: 0x0099ff,
+      fields: [
+        { name: "Job ID", value: `\`${jobId}\``, inline: true },
+        { name: "Place ID", value: placeId, inline: true },
+        { name: "Submitted", value: `<t:${timestamp}:R>`, inline: true }
+      ],
+      timestamp: new Date().toISOString()
+    });
+    
+    res.status(200).json({ 
+      success: true, 
+      message: 'Job submitted',
+      jobId: jobId
+    });
   } else {
     res.status(405).json({ error: 'Method not allowed' });
   }
