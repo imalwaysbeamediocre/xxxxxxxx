@@ -16,7 +16,7 @@ export default async function handler(req, res) {
 
   // Build the embed to match your sample
   const embed = {
-    title: "Test Results",
+    title: "Skid idk",
     color: 16753920,
     fields: [
       {
@@ -39,16 +39,8 @@ export default async function handler(req, res) {
         value: server_link ? `[Join Server](${server_link})` : "`N/A`",
         inline: false
       },
-      {
-        name: "📊 VPS Response",
-        value: vps_response ? `\`\`\`${typeof vps_response === "string" ? vps_response.substring(0, 1000) : JSON.stringify(vps_response).substring(0, 1000)}\`\`\`` : "```N/A```",
-        inline: false
-      }
     ],
     timestamp: new Date().toISOString(),
-    footer: {
-      text: "Client1 Webhook Test"
-    }
   };
 
   // Create Discord payload as in your Lua example
